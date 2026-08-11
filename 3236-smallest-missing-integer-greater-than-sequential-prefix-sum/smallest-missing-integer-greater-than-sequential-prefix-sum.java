@@ -7,12 +7,11 @@ class Solution {
                 sum+=nums[i];
             else break;
         }
-        HashMap<Integer,Integer> map=new HashMap<>();
-        for(int i=0;i<nums.length;i++)
-        {
-            map.put(nums[i],i);
+        HashSet<Integer> map=new HashSet<>();
+        for(int num:nums){
+            map.add(num);
         }
-        while(map.containsKey(sum))
+        while(map.contains(sum))
         {
             sum+=1;
         }
