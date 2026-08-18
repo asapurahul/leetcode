@@ -1,55 +1,33 @@
 class Solution {
+
     public int largestInteger(int[] nums, int k) {
         int n = nums.length;
-
-        if (k == n) {
-            int maxValue = nums[0];
-
+        if (n == k) {
+            int res = nums[0];
             for (int x : nums) {
-                maxValue = Math.max(maxValue, x);
+                res = Math.max(res, x);
             }
-
-            return maxValue;
+            return res;
         }
-
-        List<Integer> arr = new ArrayList<>();
-
+        int[] count = new int[51];
+        for (int x : nums) {
+            count[x]++;
+        }
         if (k == 1) {
-            for (int x : nums) {
-                int count = 0;
-
-                for (int y : nums) {
-                    if (x == y) {
-                        count++;
-                    }
-                }
-
-                if (count == 1) {
-                    arr.add(x);
+            for (int i = 50; i >= 0; --i) {
+                if (count[i] == 1) {
+                    return i;
                 }
             }
-        } else {
-            int[] candidates = {nums[0], nums[n - 1]};
-
-            for (int x : candidates) {
-                int count = 0;
-
-                for (int y : nums) {
-                    if (x == y) {
-                        count++;
-                    }
-                }
-
-                if (count == 1) {
-                    arr.add(x);
-                }
-            }
-        }
-
-        if (arr.isEmpty()) {
             return -1;
         }
-
-        return Collections.max(arr);
+        int res = -1;
+        if (count[nums[0]] == 1) {
+            res = Math.max(res, nums[0]);
+        }
+        if (count[nums[n - 1]] == 1) {
+            res = Math.max(res, nums[n - 1]);
+        }
+        return res;
     }
 }
