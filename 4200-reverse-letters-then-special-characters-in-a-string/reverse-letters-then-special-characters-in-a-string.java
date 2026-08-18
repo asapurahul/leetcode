@@ -1,31 +1,44 @@
 class Solution {
+    public void reverse(char [] ch,int size){
+        int left = 0;
+        int right = size-1;
+        while(left <= right){
+            char temp = ch[left];
+            ch[left] = ch[right];
+            ch[right] = temp;
+            left++;
+            right--;
+        }
+
+    }
     public String reverseByType(String s) {
-        ArrayList<Integer> l=new ArrayList<>();
-        int i=0;
-        Stack<Character> s1=new Stack<>();
-        Stack<Character> s2=new Stack<>();
-        StringBuilder sb=new StringBuilder();
-        while(i<s.length())
-        {
-            char ch=s.charAt(i);
-            if(Character.isLetter(ch))
-                s1.push(ch);
-            else
-            {
-                s2.push(ch);
-                l.add(i);
+        int i = 0;
+        int j = 0;
+        char [] chars = s.toCharArray();
+        char [] letter = new char[chars.length];
+        char [] special = new char[chars.length];
+        for(char ch : chars){
+            if(Character.isLetterOrDigit(ch)){
+                letter[i++] = ch;
             }
-            i++;
+            else{
+                special[j++] = ch;
+            }
         }
-        i=0;
-        while(i<s.length())
-        {
-            if(l.contains(i))
-                sb.append(s2.pop());
-            else
-                sb.append(s1.pop());
-            i++;
+        reverse(letter,i);
+        reverse(special,j);
+        int pc = 0;
+        int ps = 0;
+        for(int right =0;right < chars.length;right++){
+            if(Character.isLetterOrDigit(chars[right])){
+                chars[right] = letter[pc];
+                pc++;
+            }
+            else{
+                chars[right] = special[ps];
+                ps++;
+            }
         }
-        return sb.toString();
+        return new String(chars);
     }
 }
