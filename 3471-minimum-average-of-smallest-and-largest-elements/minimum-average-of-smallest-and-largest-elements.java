@@ -3,11 +3,15 @@ class Solution {
         int n=nums.length;
         Arrays.sort(nums);
         double min=Integer.MAX_VALUE;
-        for(int i=0;i<n/2;i++)
+        int i=0;
+        int j=n-1;
+        while(i<j)
         {
-            double curr=(double)(nums[i]+nums[n-i-1])/2;
+            double curr=(double)(nums[i]+nums[j])/2;
             if(curr<min)
                 min=curr;
+            i++;
+            j--;
         }
         return min;
     }
