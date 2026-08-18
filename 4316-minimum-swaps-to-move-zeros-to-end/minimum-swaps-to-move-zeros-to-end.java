@@ -6,21 +6,20 @@ class Solution {
         int j=n-1;
         while(i<j)
         {
-            if(nums[j]==0)
-            {
+            if (nums[i] != 0) {
+                i++;
+            }
+            else if (nums[j] == 0) {
                 j--;
             }
-            else
-            {
-                if(nums[i]==0)
-                {
-                    int temp=nums[i];
-                    nums[i]=nums[j];
-                    nums[j]=temp;
-                    j--;
-                    count++;
-                }
+            else {
+                int temp = nums[i];
+                nums[i] = nums[j];
+                nums[j] = temp;
+
+                count++;
                 i++;
+                j--;
             }
         }
         return count;
