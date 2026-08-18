@@ -1,17 +1,18 @@
 class Solution {
-
     public double minimumAverage(int[] nums) {
+        int n=nums.length;
         Arrays.sort(nums);
-
-        int minSum = Integer.MAX_VALUE;
-        int left = 0, right = nums.length - 1;
-        while (left < right) {
-            minSum = Math.min(minSum, nums[left] + nums[right]);
-            left++;
-            right--;
+        double min=Integer.MAX_VALUE;
+        int i=0;
+        int j=n-1;
+        while(i<j)
+        {
+            double curr=(double)(nums[i]+nums[j])/2;
+            if(curr<min)
+                min=curr;
+            i++;
+            j--;
         }
-
-        return minSum / 2.0;
+        return min;
     }
-
 }
