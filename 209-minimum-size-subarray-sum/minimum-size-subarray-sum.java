@@ -1,23 +1,23 @@
 class Solution {
     public int minSubArrayLen(int target, int[] nums) {
-        int sum=0;
-        int left=0;
-        int min=Integer.MAX_VALUE;
-        Set<Integer> set=new HashSet<>();
-        for(int right=0;right<nums.length;right++)
-        {
-            sum+=nums[right];
-            set.add(nums[right]);
-            while(sum>=target)
-            {
-                min=Math.min(min,right-left+1);
-                set.remove(nums[left]);
-                sum-=nums[left];
-                left++;
+
+        int i = 0;
+        int sum = 0;
+        int minLength = Integer.MAX_VALUE;
+
+        for (int j = 0; j < nums.length; j++) {
+
+            sum += nums[j];
+
+            while (sum >= target) {
+
+                minLength = Math.min(minLength, j - i + 1);
+
+                sum -= nums[i];
+                i++;
             }
         }
-        if(min==Integer.MAX_VALUE)
-            return 0;
-        return min;
+
+        return minLength == Integer.MAX_VALUE ? 0 : minLength;
     }
 }
