@@ -1,53 +1,46 @@
 class Solution {
     public String lexGreaterPermutation(String s, String target) {
-        int n = s.length();
 
-        int[] cnt = new int[26];
+        int[] sCount = new int[26];
 
-        for (char c : s.toCharArray()) {
-            cnt[c - 'a']++;
+        for(int i = 0; i < s.length(); i++) {
+            sCount[s.charAt(i) - 'a']++;
         }
 
-        for (int i = n - 1; i >= 0; i--) {
+        int startIndex = 0;
+        while(startIndex < target.length() && sCount[target.charAt(startIndex) - 'a'] > 0) {
+            sCount[target.charAt(startIndex) - 'a'] -= 1;
+            startIndex++;
+        }
 
-            int[] remain = cnt.clone();
-
-            boolean possible = true;
-
-            for (int j = 0; j < i; j++) {
-                int x = target.charAt(j) - 'a';
-
-                if (remain[x] == 0) {
-                    possible = false;
-                    break;
-                }
-
-                remain[x]--;
+        for(int i = startIndex; i >= 0; i--) {
+            if(i < startIndex) {
+                sCount[target.charAt(i) - 'a']++;
             }
 
-            if (!possible)
-                continue;
+            if(i < s.length()) {
+                int targetChar = target.charAt(i) - 'a';
 
-            int targetChar = target.charAt(i) - 'a';
+                for(int c = targetChar + 1; c < 26; c++) {
+                    if(sCount[c] > 0) {
 
-            for (int c = targetChar + 1; c < 26; c++) {
+                        StringBuilder result = new StringBuilder();
 
-                if (remain[c] == 0)
-                    continue;
+                        result.append(target.substring(0, i));
+                        result.append((char)(c + 'a'));
 
-                StringBuilder ans = new StringBuilder(target.substring(0, i));
+                        sCount[c]--;
 
-                ans.append((char) ('a' + c));
+                        for(int j = 0; j < 26; j++) {
+                            while(sCount[j] > 0) {
+                                result.append((char)(j + 'a'));
+                                sCount[j]--;
+                            }
+                        }
 
-                remain[c]--;
-
-                for (int x = 0; x < 26; x++) {
-                    for (int t = 0; t < remain[x]; t++) {
-                        ans.append((char) ('a' + x));
+                        return result.toString();
                     }
                 }
-
-                return ans.toString();
             }
         }
 
