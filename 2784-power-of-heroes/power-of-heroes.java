@@ -1,11 +1,15 @@
 class Solution {
     public int sumOfPower(int[] nums) {
-        long res = 0, s = 0, base = 1000000007;
         Arrays.sort(nums);
-        for (int x: nums) {
-            res = (res + (s + x) * x % base * x % base) % base;
-            s = (s * 2 + x) % base;
+
+        long mod = 1_000_000_007;
+        long ans = 0;
+        long sum = 0;
+
+        for(int x: nums) {
+            ans = (ans + (long)x * x % mod * (x + sum)) % mod;
+            sum = (2 * sum + x) % mod;
         }
-        return (int)res;
+        return (int) ans;
     }
 }
