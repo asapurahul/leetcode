@@ -1,116 +1,142 @@
+import java.util.*;
+
 class Solution {
 
-    static class Pair {
-        long sum;
-        List<Integer> ids;
+    static class State {
+        long score;
+        int[] ids;
 
-        Pair(long sum, List<Integer> ids) {
-            this.sum = sum;
+        State(long score, int[] ids) {
+            this.score = score;
             this.ids = ids;
         }
-
-        Pair copy() {
-            return new Pair(sum, new ArrayList<>(ids));
-        }
-    }
-
-    Pair[][] dp;
-    int[] next;
-
-    Pair better(Pair a, Pair b) {
-        if (a.sum != b.sum)
-            return a.sum > b.sum ? a : b;
-
-        Collections.sort(a.ids);
-        Collections.sort(b.ids);
-
-        for (int i = 0; i < Math.min(a.ids.size(), b.ids.size()); i++) {
-            if (!a.ids.get(i).equals(b.ids.get(i)))
-                return a.ids.get(i) < b.ids.get(i) ? a : b;
-        }
-
-        return a.ids.size() <= b.ids.size() ? a : b;
-    }
-
-    int lowerBound(List<List<Integer>> in, List<Integer> order, int target) {
-        int l = 0, r = order.size();
-
-        while (l < r) {
-            int m = l + (r - l) / 2;
-
-            if (in.get(order.get(m)).get(0) >= target)
-                r = m;
-            else
-                l = m + 1;
-        }
-
-        return l;
-    }
-
-    Pair solve(List<List<Integer>> in, List<Integer> order,
-               int pos, int count) {
-
-        if (pos == order.size() || count == 4)
-            return new Pair(0, new ArrayList<>());
-
-        if (dp[pos][count] != null)
-            return dp[pos][count].copy();
-
-        Pair skip = solve(in, order, pos + 1, count);
-
-        int id = order.get(pos);
-
-        Pair take = solve(
-            in,
-            order,
-            next[pos],
-            count + 1
-        );
-
-        take.sum += in.get(id).get(2);
-        take.ids.add(id);
-
-        dp[pos][count] = better(skip, take);
-
-        return dp[pos][count].copy();
     }
 
     public int[] maximumWeight(List<List<Integer>> intervals) {
         int n = intervals.size();
 
-        List<Integer> order = new ArrayList<>();
-
-        for (int i = 0; i < n; i++)
-            order.add(i);
-
-        order.sort((a, b) ->
-            Integer.compare(
-                intervals.get(a).get(0),
-                intervals.get(b).get(0)
-            )
-        );
-
-        next = new int[n];
+        // [left, right, weight, originalIndex]
+        long[][] arr = new long[n][4];
 
         for (int i = 0; i < n; i++) {
-            int id = order.get(i);
-            next[i] = lowerBound(
-                intervals,
-                order,
-                intervals.get(id).get(1) + 1
-            );
+            arr[i][0] = intervals.get(i).get(0);
+            arr[i][1] = intervals.get(i).get(1);
+            arr[i][2] = intervals.get(i).get(2);
+            arr[i][3] = i;
         }
 
-        dp = new Pair[n][4];
+        Arrays.sort(arr, (a, b) -> {
+            if (a[0] != b[0]) {
+                return Long.compare(a[0], b[0]);
+            }
+            return Long.compare(a[1], b[1]);
+        });
 
-        List<Integer> ans = solve(intervals, order, 0, 0).ids;
-        Collections.sort(ans);
+        // next[i] = first interval whose left > arr[i].right
+        int[] next = new int[n];
 
-        int[] res = new int[ans.size()];
+        for (int i = 0; i < n; i++) {
+            int lo = i + 1;
+            int hi = n;
 
-        for (int i = 0; i < ans.size(); i++)
-            res[i] = ans.get(i);
+            while (lo < hi) {
+                int mid = lo + (hi - lo) / 2;
 
-        return res;
+                if (arr[mid][0] > arr[i][1]) {
+                    hi = mid;
+                } else {
+                    lo = mid + 1;
+                }
+            }
+
+            next[i] = lo;
+        }
+
+        /*
+         * dp[c][i] = best answer using intervals from i onward,
+         * while selecting at most c intervals.
+         */
+        State[][] dp = new State[5][n + 1];
+
+        for (int c = 0; c <= 4; c++) {
+            dp[c][n] = new State(0, new int[0]);
+        }
+
+        for (int i = n - 1; i >= 0; i--) {
+
+            dp[0][i] = new State(0, new int[0]);
+
+            for (int c = 1; c <= 4; c++) {
+
+                // Option 1: skip current interval
+                State skip = dp[c][i + 1];
+
+                // Option 2: take current interval
+                State rest = dp[c - 1][next[i]];
+
+                long takeScore = arr[i][2] + rest.score;
+
+                int[] takeIds = insertSorted(
+                    rest.ids,
+                    (int) arr[i][3]
+                );
+
+                State take = new State(takeScore, takeIds);
+
+                dp[c][i] = better(skip, take);
+            }
+        }
+
+        return dp[4][0].ids;
+    }
+
+    private State better(State a, State b) {
+
+        if (a.score > b.score) {
+            return a;
+        }
+
+        if (b.score > a.score) {
+            return b;
+        }
+
+        // Same score -> lexicographically smallest
+        if (lexSmaller(a.ids, b.ids)) {
+            return a;
+        }
+
+        return b;
+    }
+
+    private boolean lexSmaller(int[] a, int[] b) {
+        int len = Math.min(a.length, b.length);
+
+        for (int i = 0; i < len; i++) {
+            if (a[i] != b[i]) {
+                return a[i] < b[i];
+            }
+        }
+
+        return a.length < b.length;
+    }
+
+    private int[] insertSorted(int[] arr, int value) {
+        int[] result = new int[arr.length + 1];
+
+        int i = 0;
+
+        while (i < arr.length && arr[i] < value) {
+            result[i] = arr[i];
+            i++;
+        }
+
+        result[i] = value;
+
+        while (i < arr.length) {
+            result[i + 1] = arr[i];
+            i++;
+        }
+
+        return result;
     }
 }
