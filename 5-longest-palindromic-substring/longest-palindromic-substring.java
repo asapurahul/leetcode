@@ -1,36 +1,62 @@
-public class Solution {
-    public String longestPalindrome(String s) {
-        if (s.length() <= 1) {
-            return s;
-        }
+class Solution {
+    /*
+        String longest = "";
 
-        int maxLen = 1;
-        String maxStr = s.substring(0, 1);
+        for(int i = 0; i < s.length(); i++) {
+            for(int j = i; j < s.length(); j++) {
+                if(s.charAt(i) == s.charAt(j)) {
+                    int sub = 0;
+                    String temp = s.substring(i, j+1);
 
-        for (int i = 0; i < s.length(); i++) {
-            for (int j = i + maxLen; j <= s.length(); j++) {
-                if (j - i > maxLen && isPalindrome(s.substring(i, j))) {
-                    maxLen = j - i;
-                    maxStr = s.substring(i, j);
+                    while(i+sub <= j-sub) {
+                        if(s.charAt(i+sub) != s.charAt(j-sub)) {
+                            temp = "";
+                            break;
+                        }
+                        sub++;
+                    }
+
+                    if(temp.length() > longest.length()) longest = temp;
                 }
             }
         }
 
-        return maxStr;
+        return longest;
+    */
+    
+    private int start = 0;
+    private int end = 0;
+
+    public String longestPalindrome(String s) {
+        solve(s.toCharArray(), 0);
+
+        return s.substring(start, end+1);
     }
 
-    private boolean isPalindrome(String str) {
-        int left = 0;
-        int right = str.length() - 1;
-
-        while (left < right) {
-            if (str.charAt(left) != str.charAt(right)) {
-                return false;
-            }
-            left++;
-            right--;
+    private void solve(char[] s, int m) {
+        if(s.length - m < (end-start)/2){
+            return;
         }
 
-        return true;
+        int right = m;
+        int left = m;
+
+        while(right+1 < s.length && s[right] == s[right+1]) {
+            right++;
+        }
+
+        m = right;
+
+        while(left-1 >= 0 && right+1 < s.length && s[left-1] == s[right+1]) {
+            right ++;
+            left--;
+        }
+
+        if (end - start < right - left) {
+            start = left;
+            end = right;
+        }
+
+        solve(s, m + 1);
     }
-}
+} 
