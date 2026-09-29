@@ -1,28 +1,4 @@
 class Solution {
-    /*
-        String longest = "";
-
-        for(int i = 0; i < s.length(); i++) {
-            for(int j = i; j < s.length(); j++) {
-                if(s.charAt(i) == s.charAt(j)) {
-                    int sub = 0;
-                    String temp = s.substring(i, j+1);
-
-                    while(i+sub <= j-sub) {
-                        if(s.charAt(i+sub) != s.charAt(j-sub)) {
-                            temp = "";
-                            break;
-                        }
-                        sub++;
-                    }
-
-                    if(temp.length() > longest.length()) longest = temp;
-                }
-            }
-        }
-
-        return longest;
-    */
     
     private int start = 0;
     private int end = 0;
