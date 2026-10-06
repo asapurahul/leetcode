@@ -1,21 +1,23 @@
 class Solution {
-
     public long[] resultArray(int[] nums, int k) {
-        int n = nums.length;
         long[] result = new long[k];
-        long[] dp = new long[k]; 
+        long[] dp = new long[k];
 
-        for (int i = 0; i < n; i++) {
-            long[] ndp = new long[k]; 
-            ndp[nums[i] % k]++;
+        for (int num : nums) {
+            long[] next = new long[k];
+
+            int value = num % k;
+
+            next[value]++;
             for (int r = 0; r < k; r++) {
-                ndp[(int) (((long) r * nums[i]) % k)] += dp[r];
+                int newRemainder = (r * value) % k;
+                next[newRemainder] += dp[r];
             }
-            dp = ndp; 
-           
             for (int r = 0; r < k; r++) {
-                result[r] += dp[r];
+                result[r] += next[r];
             }
+
+            dp = next;
         }
 
         return result;
